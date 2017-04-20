@@ -25,7 +25,7 @@ fn main() {
     let client = Client::with_connector(HttpsConnector
         ::new(hyper_rustls::TlsClient::new()));
 
-    let mut res = client.get("http://poloniex.com/public?command=return24hVolume")
+    let mut res = client.get("https://poloniex.com/public?command=return24hVolume")
             .header(Connection::close())
             .send()
             .unwrap();
