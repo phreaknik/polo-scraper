@@ -2,7 +2,7 @@ extern crate clap;
 extern crate futures;
 extern crate hyper;
 extern crate tokio_core;
-//extern crate serde_json;
+extern crate serde_json;
 
 use clap::App;
 use std::str;
@@ -10,7 +10,7 @@ use std::io::{self, Write};
 use futures::{Future, Stream};
 use hyper::Client;
 use tokio_core::reactor::Core;
-//use serde_json::Value;
+use serde_json::Value;
 
 fn main() {
     // Setup command-line interface (CLI)
@@ -30,15 +30,20 @@ fn main() {
     let client = Client::new(&core.handle());
 
     let uri = "http://httpbin.org/ip".parse().unwrap();
-    let get = client.get(uri).map(|res| {
+    let get = client.get(uri).and_then(|res| {
         println!("Response: {}", res.status());
 
-        res.body().concat2();
+        res.body().concat2().and_then(move |body| {
+            let v: Value = serde_json::from_slice(&body)
+                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
+                .unwrap();
+            println!("current IP address is {}", v["origin"]);
+            Ok(())
+        })
     });
 
-    let got = core.run(get).unwrap();
-    println!("GET: {}", str::from_utf8(&got)?);
-/*
+    core.run(get).unwrap();
+    /*
     let client = Client::with_connector(HttpsConnector::new(hyper_rustls::TlsClient::new()));
 
     let mut res = client
