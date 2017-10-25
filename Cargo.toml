@@ -5,7 +5,7 @@ authors = ["phreaknik <johnboydiv@gmail.com>"]
 description = "This tool is cool"
 
 [dependencies]
-clap = "2.22.*"
-hyper = "0.10.5"
-hyper-rustls = "0.3.2"
-serde_json = "0.9.9"
+clap = "2.26"
+futures = "0.1"
+hyper = "0.11"
+tokio-core = "0.1"
